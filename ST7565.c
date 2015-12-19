@@ -30,14 +30,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define ST7565_STARTBYTES 1
 
-uint8_t is_reversed = 0;
+char is_reversed = 0;
 
 // a handy reference to where the pages are on the screen
-const uint8_t pagemap[] = { 3, 2, 1, 0, 7, 6, 5, 4 };
+const char pagemap[] = { 3, 2, 1, 0, 7, 6, 5, 4 };
 
 
 // the memory buffer for the LCD
-uint8_t st7565_buffer[1024] = { 
+char st7565_buffer[1024] = { 
 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 
 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 
 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 
@@ -116,12 +116,12 @@ uint8_t st7565_buffer[1024] = {
 #define enablePartialUpdate
 
 #ifdef enablePartialUpdate
-static uint8_t xUpdateMin, xUpdateMax, yUpdateMin, yUpdateMax;
+static char xUpdateMin, xUpdateMax, yUpdateMin, yUpdateMax;
 #endif
 
 
 
-static void updateBoundingBox(uint8_t xmin, uint8_t ymin, uint8_t xmax, uint8_t ymax) {
+static void updateBoundingBox(char xmin, char ymin, char xmax, char ymax) {
 #ifdef enablePartialUpdate
   if (xmin < xUpdateMin) xUpdateMin = xmin;
   if (xmax > xUpdateMax) xUpdateMax = xmax;
@@ -132,7 +132,7 @@ static void updateBoundingBox(uint8_t xmin, uint8_t ymin, uint8_t xmax, uint8_t 
 
 
 
-drawstring(uint8_t x, uint8_t line, char *c) {
+drawstring(char x, char line, char *c) {
   while (c[0] != 0) {
     drawchar(x, line, c[0]);
     c++;
@@ -146,8 +146,8 @@ drawstring(uint8_t x, uint8_t line, char *c) {
   }
 }
 
-drawchar(uint8_t x, uint8_t line, char c) {
-    uint8_t i;
+drawchar(char x, char line, char c) {
+    char i;
   for ( i =0; i<5; i++ ) {
     st7565_buffer[x + (line*128) ] = font[c*5+i];
     x++;
@@ -158,8 +158,8 @@ drawchar(uint8_t x, uint8_t line, char c) {
 
 
 // bresenham's algorithm - thx wikpedia
-drawline(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t color) {
-  uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
+drawline(char x0, char y0, char x1, char y1, char color) {
+  char steep = abs(y1 - y0) > abs(x1 - x0);
   if (steep) {
     swap(x0, y0);
     swap(x1, y1);
@@ -173,7 +173,7 @@ drawline(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t color) {
   // much faster to put the test here, since we've already sorted the points
   updateBoundingBox(x0, y0, x1, y1);
 
-  uint8_t dx, dy;
+  char dx, dy;
   dx = x1 - x0;
   dy = abs(y1 - y0);
 
@@ -200,12 +200,12 @@ drawline(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t color) {
 }
 
 // filled rectangle
-fillrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
-		      uint8_t color) {
+fillrect(char x, char y, char w, char h, 
+		      char color) {
 
   // stupidest version - just pixels - but fast with internal buffer!
-    uint8_t i;
-    uint8_t j;
+    char i;
+    char j;
   for ( i=x; i<x+w; i++) {
     for ( j=y; j<y+h; j++) {
       my_setpixel(i, j, color);
@@ -216,10 +216,10 @@ fillrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h,
 }
 
 // draw a rectangle
-drawrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
-		      uint8_t color) {
+drawrect(char x, char y, char w, char h, 
+		      char color) {
   // stupidest version - just pixels - but fast with internal buffer!
-    uint8_t i;
+    char i;
   for ( i=x; i<x+w; i++) {
     my_setpixel(i, y, color);
     my_setpixel(i, y+h-1, color);
@@ -233,8 +233,8 @@ drawrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h,
 }
 
 // draw a circle outline
-drawcircle(uint8_t x0, uint8_t y0, uint8_t r, 
-			uint8_t color) {
+drawcircle(char x0, char y0, char r, 
+			char color) {
   updateBoundingBox(x0-r, y0-r, x0+r, y0+r);
 
   int8_t f = 1 - r;
@@ -274,8 +274,8 @@ drawcircle(uint8_t x0, uint8_t y0, uint8_t r,
 
 }
 
-fillcircle(uint8_t x0, uint8_t y0, uint8_t r, 
-			uint8_t color) {
+fillcircle(char x0, char y0, char r, 
+			char color) {
   updateBoundingBox(x0-r, y0-r, x0+r, y0+r);
 
   int8_t f = 1 - r;
@@ -284,7 +284,7 @@ fillcircle(uint8_t x0, uint8_t y0, uint8_t r,
   int8_t x = 0;
   int8_t y = r;
 
-  uint8_t i;
+  char i;
   for ( i=y0-r; i<=y0+r; i++) {
     my_setpixel(x0, i, color);
   }
@@ -311,7 +311,7 @@ fillcircle(uint8_t x0, uint8_t y0, uint8_t r,
   }
 }
 
-void my_setpixel(uint8_t x, uint8_t y, uint8_t color) {
+void my_setpixel(char x, char y, char color) {
   if ((x >= LCDWIDTH) || (y >= LCDHEIGHT))
     return;
 
@@ -323,7 +323,7 @@ void my_setpixel(uint8_t x, uint8_t y, uint8_t color) {
 }
 
 // the most basic function, set a single pixel
-void setpixel(uint8_t x, uint8_t y, uint8_t color) {
+void setpixel(char x, char y, char color) {
   if ((x >= LCDWIDTH) || (y >= LCDHEIGHT))
     return;
 
@@ -338,14 +338,14 @@ void setpixel(uint8_t x, uint8_t y, uint8_t color) {
 
 
 // the most basic function, get a single pixel
-uint8_t getpixel(uint8_t x, uint8_t y) {
+char getpixel(char x, char y) {
   if ((x >= LCDWIDTH) || (y >= LCDHEIGHT))
     return 0;
 
   return (st7565_buffer[x+ (y/8)*128] >> (7-(y%8))) & 0x1;  
 }
 
-void st7565_init(uint8_t contrast) {
+void st7565_init(char contrast) {
   // set pin directions
   GLCD_CS1_DDR   |= ( 1 << GLCD_CS1_PIN);
   GLCD_RESET_DDR |= ( 1 << GLCD_RESET_PIN);
@@ -411,7 +411,7 @@ void st7565_init(uint8_t contrast) {
   st7565_set_brightness(contrast);
 }
 
-inline void spiwrite(uint8_t c) {
+inline void spiwrite(char c) {
  // shiftOut(sid, sclk, MSBFIRST, c);
   
   int8_t i;
@@ -431,25 +431,25 @@ inline void spiwrite(uint8_t c) {
   
 }
 
-void st7565_command(uint8_t c) {
+void st7565_command(char c) {
   //digitalWrite(a0, LOW);  
   SET_BIT( &GLCD_A0_PORT, GLCD_A0_PIN, 0);
   spiwrite(c);
 }
 
-void st7565_data(uint8_t c) {
+void st7565_data(char c) {
   //digitalWrite(a0, HIGH);
   SET_BIT( &GLCD_A0_PORT, GLCD_A0_PIN, 1);
   spiwrite(c);
 }
-void st7565_set_brightness(uint8_t val) {
+void st7565_set_brightness(char val) {
     st7565_command(CMD_SET_VOLUME_FIRST);
     st7565_command(CMD_SET_VOLUME_SECOND | (val & 0x3f));
 }
 
 
 void st7565_display(void) {
-  uint8_t col, maxcol, p;
+  char col, maxcol, p;
 
   /*
   Serial.print("Refresh ("); Serial.print(xUpdateMin, DEC); 
@@ -514,7 +514,7 @@ void st7565_clear(void) {
 
 // this doesnt touch the buffer, just clears the display RAM - might be handy
 void st7565_clear_display(void) {
-  uint8_t p, c;
+  char p, c;
   
   for(p = 0; p < 8; p++) {
     /*
