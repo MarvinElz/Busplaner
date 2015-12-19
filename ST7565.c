@@ -24,9 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 //#include <Wire.h>
 #include <stdlib.h>
-
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h> // usleep()
 #include "ST7565.h"
-#include "st7565-config.h"
+#include "ST7565-config.h"
+#include "font.h"
+#include <wiringPi.h>
 
 #define ST7565_STARTBYTES 1
 
@@ -119,7 +123,7 @@ char st7565_buffer[1024] = {
 static char xUpdateMin, xUpdateMax, yUpdateMin, yUpdateMax;
 #endif
 
-
+void my_setpixel(char x, char y, char color);
 
 static void updateBoundingBox(char xmin, char ymin, char xmax, char ymax) {
 #ifdef enablePartialUpdate
@@ -132,7 +136,7 @@ static void updateBoundingBox(char xmin, char ymin, char xmax, char ymax) {
 
 
 
-drawstring(char x, char line, char *c) {
+void drawstring(char x, char line, char *c) {
   while (c[0] != 0) {
     drawchar(x, line, c[0]);
     c++;
@@ -146,7 +150,7 @@ drawstring(char x, char line, char *c) {
   }
 }
 
-drawchar(char x, char line, char c) {
+void drawchar(char x, char line, char c) {
     char i;
   for ( i =0; i<5; i++ ) {
     st7565_buffer[x + (line*128) ] = font[c*5+i];
@@ -158,7 +162,7 @@ drawchar(char x, char line, char c) {
 
 
 // bresenham's algorithm - thx wikpedia
-drawline(char x0, char y0, char x1, char y1, char color) {
+void drawline(char x0, char y0, char x1, char y1, char color) {
   char steep = abs(y1 - y0) > abs(x1 - x0);
   if (steep) {
     swap(x0, y0);
@@ -200,7 +204,7 @@ drawline(char x0, char y0, char x1, char y1, char color) {
 }
 
 // filled rectangle
-fillrect(char x, char y, char w, char h, 
+void fillrect(char x, char y, char w, char h, 
 		      char color) {
 
   // stupidest version - just pixels - but fast with internal buffer!
@@ -216,7 +220,7 @@ fillrect(char x, char y, char w, char h,
 }
 
 // draw a rectangle
-drawrect(char x, char y, char w, char h, 
+void drawrect(char x, char y, char w, char h, 
 		      char color) {
   // stupidest version - just pixels - but fast with internal buffer!
     char i;
@@ -233,7 +237,7 @@ drawrect(char x, char y, char w, char h,
 }
 
 // draw a circle outline
-drawcircle(char x0, char y0, char r, 
+void drawcircle(char x0, char y0, char r, 
 			char color) {
   updateBoundingBox(x0-r, y0-r, x0+r, y0+r);
 
@@ -274,7 +278,7 @@ drawcircle(char x0, char y0, char r,
 
 }
 
-fillcircle(char x0, char y0, char r, 
+void fillcircle(char x0, char y0, char r, 
 			char color) {
   updateBoundingBox(x0-r, y0-r, x0+r, y0+r);
 
@@ -346,29 +350,28 @@ char getpixel(char x, char y) {
 }
 
 void st7565_init(char contrast) {
-  // set pin directions
-  GLCD_CS1_DDR   |= ( 1 << GLCD_CS1_PIN);
-  GLCD_RESET_DDR |= ( 1 << GLCD_RESET_PIN);
-  GLCD_A0_DDR    |= ( 1 << GLCD_A0_PIN);
-  GLCD_SCL_DDR   |= ( 1 << GLCD_SCL_PIN);
-  GLCD_SDA_DDR   |= ( 1 << GLCD_SDA_PIN);
-  
-  
-  
-  /*
-  pinMode(sid, OUTPUT);
-  pinMode(sclk, OUTPUT);
-  pinMode(a0, OUTPUT);
-  pinMode(rst, OUTPUT);
-  pinMode(cs, OUTPUT);
-  */
-  // toggle RST low to reset; CS low so it'll listen to us
-  
-  SET_BIT( &GLCD_CS1_PORT, GLCD_CS1_PIN , 0 );
 
-  SET_BIT( &GLCD_RESET_PORT, GLCD_RESET_PIN , 0 );
-  delay(500);
-  SET_BIT( &GLCD_RESET_PORT, GLCD_RESET_PIN , 1 );
+  // set pin directions
+  pinMode(CS, OUTPUT);
+  pinMode(RESET, OUTPUT);
+  pinMode(A0, OUTPUT);
+  pinMode(SCL, OUTPUT);
+  pinMode(SDA, OUTPUT);
+
+  //digitalWrite(0, HIGH);
+  // toggle RST low to reset; CS low so it'll listen to us
+
+  digitalWrite(CS, LOW);
+  //SET_BIT( &GLCD_CS1_PORT, GLCD_CS1_PIN , 0 );
+
+  digitalWrite(RESET, LOW);
+  //SET_BIT( &GLCD_RESET_PORT, GLCD_RESET_PIN , 0 );
+
+  usleep(500000);
+ // delay(500);
+
+  digitalWrite(RESET, HIGH);
+  //SET_BIT( &GLCD_RESET_PORT, GLCD_RESET_PIN , 1 );
 
   // LCD bias select
   st7565_command(CMD_SET_BIAS_7);
@@ -417,29 +420,32 @@ inline void spiwrite(char c) {
   int8_t i;
   for (i=7; i>=0; i--) {
 	//SET_BIT( &GLCD_SCL_PORT, GLCD_SCL_PIN, 0); 
-
-    
-    GLCD_SCL_PORT &= ~_BV(GLCD_SCL_PIN);  // SCL -> LOW
-    
+	usleep(500);
+	digitalWrite(SCL, LOW);
+  //  GLCD_SCL_PORT &= ~_BV(GLCD_SCL_PIN);  // SCL -> LOW
+	usleep(500);
     if (c & 1 << i) // wenn jeweiliges bit == HIGH
-      GLCD_SDA_PORT |= _BV(GLCD_SDA_PIN);  // SDA -> HIGH
+	  digitalWrite(SDA, HIGH);
+     // GLCD_SDA_PORT |= _BV(GLCD_SDA_PIN);  // SDA -> HIGH
     else
-      GLCD_SDA_PORT &= ~_BV(GLCD_SDA_PIN);  // SDA -> LOW
-            
-    GLCD_SCL_PORT |= _BV(GLCD_SCL_PIN);  // SCL -> HIGH
+	  digitalWrite(SDA, LOW);
+  //    GLCD_SDA_PORT &= ~_BV(GLCD_SDA_PIN);  // SDA -> LOW
+	usleep(500);
+	digitalWrite(SCL, HIGH);
+  //  GLCD_SCL_PORT |= _BV(GLCD_SCL_PIN);  // SCL -> HIGH
   }
   
 }
 
 void st7565_command(char c) {
-  //digitalWrite(a0, LOW);  
-  SET_BIT( &GLCD_A0_PORT, GLCD_A0_PIN, 0);
+  digitalWrite(A0, LOW);  
+  //SET_BIT( &GLCD_A0_PORT, GLCD_A0_PIN, 0);
   spiwrite(c);
 }
 
 void st7565_data(char c) {
-  //digitalWrite(a0, HIGH);
-  SET_BIT( &GLCD_A0_PORT, GLCD_A0_PIN, 1);
+  digitalWrite(A0, HIGH);
+  //SET_BIT( &GLCD_A0_PORT, GLCD_A0_PIN, 1);
   spiwrite(c);
 }
 void st7565_set_brightness(char val) {
