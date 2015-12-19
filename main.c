@@ -1,4 +1,4 @@
-// compilieren mit g++ main.c -o main -lcurl
+// compilieren mit g++ main.c -o main -lcurl -lwiringPi
 
 // http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=südhöhe
 #include <iostream>
@@ -6,8 +6,10 @@
 #include <curl/curl.h> // apt-get install libcurl4-gnutls-dev
 #include <string>
 #include <unistd.h>
-#include "ST7565.h"
-#define contrast 0x20
+#include <wiringPi.h>
+#include "ST7565.c"
+
+#define contrast 30
 
 using namespace std;
 
@@ -34,6 +36,7 @@ int main(int argc, char** argv){
   CURL *curl;
   CURLcode res;
   string body;
+  wiringPiSetup();
 
   curl = curl_easy_init();
   if(curl) {
@@ -53,17 +56,17 @@ int main(int argc, char** argv){
   
 
   // initialize screen
-  //st7565_init(contrast);
+  st7565_init(contrast);
 
   // clear buffer and screen
-  //st7565_clear();
+  st7565_clear();
 
   // Hello World
-  //char helloworld[] = "Hello World";
-  //drawstring(1, 1, helloworld);
+  char helloworld[] = "Hello World";
+  drawstring(1, 1, helloworld);
 
   // update screen
-  //st7565_display();
+  st7565_display();
 
   // main-loop
   //while(1){
@@ -116,4 +119,3 @@ vector<line> parseHTML( string html ){
    }
    return halt;
 }
-
