@@ -10,15 +10,23 @@
 #include "ST7565.c"
 
 #define contrast 30
-
 using namespace std;
 
 typedef vector<string> line;
 
 vector<line> parseHTML( string html );
 
+struct hst{
+   char name[100];
+   const char url[300];
+}typedef hst;
+
+hst haltestellen[] = { {"Suedhoehe:", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=südhöhe" }
+                   , {"Hoeckendorfer Weg:", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=Höckendorfer+Weg"} };
 
 vector<line> haltestelle;
+
+void createText(char* text, const line);
 
 
 // TODO: get Raspberry GPIO Running http://raspberrypiguide.de/howtos/raspberry-pi-gpio-how-to/
@@ -31,6 +39,12 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
     return size * nmemb;
 }
 
+
+int min( int a, int b ){
+   if( a < b ) return a;
+   return b;
+}
+
 int main(int argc, char** argv){
   cout << "Hallo Welt" << endl;
   CURL *curl;
@@ -38,47 +52,87 @@ int main(int argc, char** argv){
   string body;
   wiringPiSetup();
 
-  curl = curl_easy_init();
-  if(curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=südhöhe");
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &body);
-    res = curl_easy_perform(curl);
-    curl_easy_cleanup(curl);
-    
-    haltestelle = parseHTML( body ); 
-    for(unsigned i = 0; i < haltestelle.size(); i++){
-       for(unsigned j = 0; j < haltestelle[i].size(); j++)
-           cout << haltestelle[i][j] << " ";
-       cout << endl;
-    }
-  }
-  
-
   // initialize screen
   st7565_init(contrast);
-
-  // clear buffer and screen
-  st7565_clear();
-
-  // Hello World
-  char helloworld[] = "Hello World";
-  drawstring(1, 1, helloworld);
-
-  // update screen
-  st7565_display();
+  char text[128];
+  char hstIndex = 0;
 
   // main-loop
-  //while(1){
-    // get bus/tram information
+  while(1){
+  
 
-    
+    body.clear();
+
+    // get bus/tram information
+    curl = curl_easy_init();
+    if(curl) {
+       curl_easy_setopt(curl, CURLOPT_URL, haltestellen[hstIndex].url);
+       curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+       curl_easy_setopt(curl, CURLOPT_WRITEDATA, &body);
+       res = curl_easy_perform(curl);
+       curl_easy_cleanup(curl);
+
+   //    cout << body << endl;
+
+       haltestelle.clear();      
+       haltestelle = parseHTML( body ); 
+
+    }
+    // clear buffer and screen
+    st7565_clear();
+
+    drawstring(0, 0, haltestellen[hstIndex].name);
+
     // parse information into vector<line>
+    for(unsigned i = 0; i < min( 7, haltestelle.size() ); i++){
+      createText(text, haltestelle[i]);
+      cout << text << endl;
+      drawstring(0, i+1, text);
+    }
+   
+
+    // update screen
+    st7565_display(); 
     
-    // prepare information 
-  //}
+    sleep(4);
+    hstIndex = (hstIndex+1)%2;
+    cout << "--------------" << endl;
+  }   // end while
  
 }
+
+
+// creates Output Text out of line-information
+void createText(char* text, const line lineInfo)
+{
+  char *c = text;
+  unsigned s = 0;
+  for( unsigned i = 0; i < min(2, lineInfo.size() ); i++ ){
+     for( unsigned s = 0; s < lineInfo[i].size(); s++ ){         
+        *c = lineInfo[i].at(s); // copy string
+	c++;
+     }
+     *c++ = ' ';
+  }
+
+  while( c < text + 19 )
+     *c++ = ' ';
+  c = text + 18;
+  *c++ = ' ';  
+
+  if( lineInfo.size() == 3 ){
+     for( unsigned s = 0; s < lineInfo[2].size(); s++ ){ 
+        *c = lineInfo[2].at(s); // copy string
+        c++;
+     }
+  }
+
+  *c++ = '\0';
+  *c++ = '\0';
+}
+
+
+
 
 /* --------------------------------
     parsing functions
