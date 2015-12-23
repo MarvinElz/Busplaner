@@ -367,7 +367,7 @@ void st7565_init(char contrast) {
   digitalWrite(RESET, LOW);
   //SET_BIT( &GLCD_RESET_PORT, GLCD_RESET_PIN , 0 );
 
-  usleep(500000);
+  usleep(5000);
  // delay(500);
 
   digitalWrite(RESET, HIGH);
@@ -420,17 +420,17 @@ inline void spiwrite(char c) {
   int8_t i;
   for (i=7; i>=0; i--) {
 	//SET_BIT( &GLCD_SCL_PORT, GLCD_SCL_PIN, 0); 
-	usleep(500);
+	usleep(1);
 	digitalWrite(SCL, LOW);
   //  GLCD_SCL_PORT &= ~_BV(GLCD_SCL_PIN);  // SCL -> LOW
-	usleep(500);
+	usleep(1);
     if (c & 1 << i) // wenn jeweiliges bit == HIGH
 	  digitalWrite(SDA, HIGH);
      // GLCD_SDA_PORT |= _BV(GLCD_SDA_PIN);  // SDA -> HIGH
     else
 	  digitalWrite(SDA, LOW);
   //    GLCD_SDA_PORT &= ~_BV(GLCD_SDA_PIN);  // SDA -> LOW
-	usleep(500);
+	usleep(1);
 	digitalWrite(SCL, HIGH);
   //  GLCD_SCL_PORT |= _BV(GLCD_SCL_PIN);  // SCL -> HIGH
   }
