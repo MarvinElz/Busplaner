@@ -3,12 +3,15 @@
 // http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=südhöhe
 #include <iostream>
 #include <time.h>
+
 #include <vector>
 #include <curl/curl.h> // apt-get install libcurl4-gnutls-dev
 #include <string>
 #include <unistd.h>
 #include <wiringPi.h>
+
 #include <thread>
+
 #include "ST7565.c"
 
 #define contrast 30
@@ -34,6 +37,7 @@ string body;
 
 void createText(char* text, const line);
 
+
 // TODO: get Raspberry GPIO Running http://raspberrypiguide.de/howtos/raspberry-pi-gpio-how-to/
 // http://www.element14.com/community/servlet/JiveServlet/previewBody/73950-102-4-309126/GPIO_Pi2.png?01AD=3GZgWMTpg1jDSMy2YO8hD1OqtjdCp9XqniBSBHoUhsn1I8J5raM6jOQ&01RI=B51CF70A37220D9&01NA=na
 
@@ -43,7 +47,6 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
-
 
 int min( int a, int b ){
    if( a < b ) return a;
@@ -82,6 +85,7 @@ int main(int argc, char** argv){
   
 
     body.clear();
+
     start = time(NULL);
     thread threadgetInfo ( getInformation );
     while( time(NULL) - start < 6 && !threadgetInfo.joinable() ){
@@ -106,7 +110,6 @@ int main(int argc, char** argv){
 
     // clear buffer and screen
     st7565_clear();
-
 
     drawstring(0, 0, haltestellen[hstIndex].name);
 
