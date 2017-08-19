@@ -26,8 +26,8 @@ struct hst{
    const char url[300];
 }typedef hst;
 
-hst haltestellen[] = { {"Suedhoehe:", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=s%C3%BCdh%C3%B6he" }
-                   , {"Hoeckendorfer Weg:", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=H%C3%B6ckendorfer+Weg"} };
+hst haltestellen[] = { {"Suedhoehe:", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=suedhoehe" }
+                   , {"Hoeckendorfer Weg:", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=Hoeckendorfer+Weg"} };
 
 vector<line> haltestelle;
 
