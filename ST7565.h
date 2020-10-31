@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 
-#define swap(a, b) { uint8_t t = a; a = b; b = t; }
+#define swap(a, b) { char t = a; a = b; b = t; }
 
 #define BLACK 1
 #define WHITE 0
@@ -77,28 +77,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 
-  void st7565_init(uint8_t contrast); 
-  void st7565_command(uint8_t c);
-  void st7565_data(uint8_t c);
-  void st7565_set_brightness(uint8_t val);
+  void st7565_init(char contrast); 
+  void st7565_command(char c);
+  void st7565_data(char c);
+  void st7565_set_brightness(char val);
   void st7565_clear_display(void);
   void st7565_clear();                 // macht screen leer
   void st7565_display();               // muss aufgerufen werden für screenUpdate
 
-  void setpixel(uint8_t x, uint8_t y, uint8_t color);
-  uint8_t getpixel(uint8_t x, uint8_t y);
-  void fillcircle(uint8_t x0, uint8_t y0, uint8_t r, 
-		  uint8_t color);
-  void drawcircle(uint8_t x0, uint8_t y0, uint8_t r, 
-		  uint8_t color);
-  void drawrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
-		uint8_t color);
-  void fillrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
-		uint8_t color);
-  void drawline(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, 
-		uint8_t color);
-  void drawchar(uint8_t x, uint8_t line, char c);
-  void drawstring(uint8_t x, uint8_t line, char *c);
+  void setpixel(char x, char y, char color);
+  char getpixel(char x, char y);
+  void fillcircle(char x0, char y0, char r, 
+		  char color);
+  void drawcircle(char x0, char y0, char r, 
+		  char color);
+  void drawrect(char x, char y, char w, char h, 
+		char color);
+  void fillrect(char x, char y, char w, char h, 
+		char color);
+  void drawline(char x0, char y0, char x1, char y1, 
+		char color);
+  void drawchar(char x, char line, char c);
+  void drawstring(char x, char line, char *c);
 
 
 #endif
