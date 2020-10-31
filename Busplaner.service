@@ -1,0 +1,16 @@
+[Unit]
+Description=Anzeige der abfahrenden Busse
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+PermissionsStartOnly=true
+
+Restart=always
+RestartSec=5
+
+ExecStart =/home/pi/Busplaner/main
+
+[Install]
+WantedBy=multi-user.target
