@@ -13,7 +13,6 @@
 #include <thread>
 
 #include "ST7565.c"
-<<<<<<< HEAD
 
 #define contrast 30
 using namespace std;
@@ -37,23 +36,6 @@ struct hst{
 hst haltestellen[] = { {"Saarstrasse"       , "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=Saarstrasse"},
 					   {"Cunnersd. Str.", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=CunnersdorferStrasse"}
 					 };
-=======
-
-#define contrast 30
-using namespace std;
-
-typedef vector<string> line;
-
-void parseHTML(  );
-
-struct hst{
-   char name[100];
-   const char url[300];
-}typedef hst;
-
-hst haltestellen[] = { {"Suedhoehe:", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=suedhoehe" }
-                   , {"Hoeckendorfer Weg:", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=Hoeckendorfer+Weg"} };
->>>>>>> 92bf85c65b752df51329417bef6346ae830678c2
 
 vector<line> haltestelle;
 
@@ -96,7 +78,6 @@ void getInformation( ){
 
 
 int main(int argc, char** argv){
-<<<<<<< HEAD
   cout << "Busplaner gestartet" << endl;
   
   wiringPiSetup();
@@ -154,87 +135,29 @@ int main(int argc, char** argv){
     drawstring(0, 0, haltestellen[hstIndex].name);
     drawstring(15*6, 0, timeChar);
 
-=======
-  cout << "Hallo Welt" << endl;
-  
-
-  wiringPiSetup();
-
-  // initialize screen
-  st7565_init(contrast);
-
-  time_t start;
-
-  // main-loop
-  while(1){
-  
-
-    body.clear();
-
-    start = time(NULL);
-    thread threadgetInfo ( getInformation );
-    while( time(NULL) - start < 6 && !threadgetInfo.joinable() ){
-      sleep(1);	
-    }
-    if( threadgetInfo.joinable() ) 
-       threadgetInfo.join();
-    else
-       continue;
-
-
-    haltestelle.clear();
-    start = time(NULL);      
-    thread threadparse ( parseHTML );
-    while( time(NULL) - start < 6 && !threadparse.joinable() ){
-      sleep(1);	
-    }
-    if( threadparse.joinable() )
-       threadparse.join();
-    else 
-       continue;
-
-    // clear buffer and screen
-    st7565_clear();
-
-    drawstring(0, 0, haltestellen[hstIndex].name);
-
->>>>>>> 92bf85c65b752df51329417bef6346ae830678c2
     // parse information into vector<line>
     for(unsigned i = 0; i < min( 7, haltestelle.size() ); i++){
       createText(text, haltestelle[i]);
       cout << text << endl;
       drawstring(0, i+1, text);
-<<<<<<< HEAD
     }   
-=======
-    }
-   
->>>>>>> 92bf85c65b752df51329417bef6346ae830678c2
 
     // update screen
     st7565_display(); 
     
-<<<<<<< HEAD
     sleep(10);
     hstIndex = (hstIndex+1)%sizeofarray(haltestellen);
-=======
-    sleep(4);
-    hstIndex = (hstIndex+1)%2;
->>>>>>> 92bf85c65b752df51329417bef6346ae830678c2
     cout << "--------------" << endl;
   }   // end while
  
 }
 
-<<<<<<< HEAD
 //void addTimeToHaltestellenName(const &timeString, string &result, const string &HST_Name ){
 //	//max 21 Zeichen
 //	result = HST_Name;
 //	result.append("                     ");
 //	result.replace(15,  timeString.length() ,timeString);
 //}
-=======
->>>>>>> 92bf85c65b752df51329417bef6346ae830678c2
 
 // creates Output Text out of line-information
 void createText(char* text, const line lineInfo)
@@ -242,7 +165,6 @@ void createText(char* text, const line lineInfo)
   char *c = text;
   unsigned s = 0;
   for( unsigned i = 0; i < min(2, lineInfo.size() ); i++ ){
-<<<<<<< HEAD
      for( unsigned s = 0; s < lineInfo[i].size(); s++ ){ 
 			if( lineInfo[i].at(s) == 0xC3 ){  // UTF Umlaut
 				switch (lineInfo[i].at(s+1)){
@@ -265,11 +187,6 @@ void createText(char* text, const line lineInfo)
 				*c = lineInfo[i].at(s); // copy string				
 			}
 			c++;
-=======
-     for( unsigned s = 0; s < lineInfo[i].size(); s++ ){         
-        *c = lineInfo[i].at(s); // copy string
-	c++;
->>>>>>> 92bf85c65b752df51329417bef6346ae830678c2
      }
      *c++ = ' ';
   }
