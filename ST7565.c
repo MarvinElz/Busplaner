@@ -136,7 +136,7 @@ static void updateBoundingBox(char xmin, char ymin, char xmax, char ymax) {
 
 
 
-void drawstring(char x, char line, char *c) {
+void drawstring(char x, char line, const char *c) {
   while (c[0] != 0) {
     drawchar(x, line, c[0]);
     c++;
@@ -350,6 +350,8 @@ char getpixel(char x, char y) {
 }
 
 void st7565_init(char contrast) {
+
+  wiringPiSetup();
 
   // set pin directions
   pinMode(CS, OUTPUT);

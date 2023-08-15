@@ -98,7 +98,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
   void drawline(char x0, char y0, char x1, char y1, 
 		char color);
   void drawchar(char x, char line, char c);
-  void drawstring(char x, char line, char *c);
+  void drawstring(char x, char line, const char *c);
 
 
 #endif
