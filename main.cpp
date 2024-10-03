@@ -27,7 +27,7 @@ typedef struct{
 
 static Bus_Stop_Config_t bus_stop_config[] = { 
    {"Saarstrasse"   , "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=Saarstrasse"},
-	{"Cunnersd. Str.", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=CunnersdorferStrasse"}
+   {"Cunnersd. Str.", "http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?hst=CunnersdorferStrasse"}
 };
 
 typedef struct{
@@ -125,7 +125,7 @@ int main(int argc, char** argv){
    std::cout << "Busplaner gestartet" << std::endl;
 
    curl_global_init( CURL_GLOBAL_ALL );
-   
+
    // initialize screen
    st7565_init(contrast);
 
@@ -139,13 +139,13 @@ int main(int argc, char** argv){
       st7565_clear();
 
       time_t current_time;
-	   struct tm * time_info;
-	   char time_string[8];
+      struct tm * time_info;
+      char time_string[8];
 
-	   time(&current_time);
-	   time_info = localtime(&current_time);
+      time(&current_time);
+      time_info = localtime(&current_time);
 
-	   strftime(time_string, sizeof(time_string), " %H:%M", time_info);	
+      strftime(time_string, sizeof(time_string), " %H:%M", time_info);	
 
       drawstring(0, 0, bus_stop_config[current_display_bus_stop].name.c_str());
       drawstring(15*6, 0, time_string);
@@ -166,9 +166,9 @@ int main(int argc, char** argv){
       sleep(5);
       current_display_bus_stop = (current_display_bus_stop+1)%sizeofarray(bus_stop_config);
       //std::cout << "--------------" << std::endl;
-  }   // end while
+   }   // end while
 
-  return 0; 
+   return 0; 
 }
 
 static void replace_utf_letters( std::string& s ){
@@ -176,20 +176,20 @@ static void replace_utf_letters( std::string& s ){
       if( uint8_t(s[i]) != 0xC3 ) continue;
       switch( uint8_t(s[i+1]) ){
          case 0x84:
-			   s[i] = 'A'; s[i+1] = 'e'; i++; break;
-			case 0x96:
-				s[i] = 'O'; s[i+1] = 'e'; i++; break;	
-			case 0x9C:
-				s[i] = 'U'; s[i+1] = 'e'; i++; break;	
-			case 0xA4:
-				s[i] = 'a'; s[i+1] = 'e'; i++; break;		
-			case 0xB6:
-				s[i] = 'o'; s[i+1] = 'e'; i++; break;	
-			case 0xBC:
-				s[i] = 'u'; s[i+1] = 'e'; i++; break;
-			default: 
-				std::cout << "UTF-Charakter nicht unterstuetzt" << std::endl; 
-	   }        
+            s[i] = 'A'; s[i+1] = 'e'; i++; break;
+         case 0x96:
+         	s[i] = 'O'; s[i+1] = 'e'; i++; break;	
+         case 0x9C:
+         	s[i] = 'U'; s[i+1] = 'e'; i++; break;	
+         case 0xA4:
+         	s[i] = 'a'; s[i+1] = 'e'; i++; break;		
+         case 0xB6:
+         	s[i] = 'o'; s[i+1] = 'e'; i++; break;	
+         case 0xBC:
+         	s[i] = 'u'; s[i+1] = 'e'; i++; break;
+         default: 
+         	std::cout << "UTF-Charakter nicht unterstuetzt" << std::endl; 
+      }        
    }
 }
 
@@ -202,21 +202,21 @@ static void replace_utf_letters( std::string& s ){
 // trim from left
 inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
 {
-    s.erase(0, s.find_first_not_of(t));
-    return s;
+   s.erase(0, s.find_first_not_of(t));
+   return s;
 }
 
 // trim from right
 inline std::string& rtrim(std::string& s, const char* t = " \t\n\r\f\v")
 {
-    s.erase(s.find_last_not_of(t) + 1);
-    return s;
+   s.erase(s.find_last_not_of(t) + 1);
+   return s;
 }
 
 // trim from left & right
 inline std::string& trim(std::string& s, const char* t = " \t\n\r\f\v")
 {
-    return ltrim(rtrim(s, t), t);
+   return ltrim(rtrim(s, t), t);
 }
 
 
@@ -230,26 +230,26 @@ static bool remove_quotes( std::string& input ){
 
 //std::string s_description; // z.B. 66
 //std::string s_destination; // z.B. Coschütz
-//std::string s_minutes;         // z.B. 5
+//std::string s_minutes;     // z.B. 5
 static bool parse_bus_line_information( const std::string& bus_line_string, Bus_Line_Information_t* bus_line_information ){   
-   
+
    std::size_t index = bus_line_string.find(',');
    if( index == std::string::npos ) return false;
 
    bus_line_information->s_description = bus_line_string.substr( 0, index );
    if( !remove_quotes( bus_line_information->s_description ) ) return false;
    replace_utf_letters( bus_line_information->s_description );
-   
+
    std::size_t index_destination = bus_line_string.find(',', index+1);
    if( index_destination == std::string::npos ) return false;
    bus_line_information->s_destination = bus_line_string.substr( index+1, index_destination-index-1 );
    if( !remove_quotes( bus_line_information->s_destination ) ) return false;
    replace_utf_letters( bus_line_information->s_destination );
-   
+
    bus_line_information->s_minutes = bus_line_string.substr( index_destination+1 );
    if( !remove_quotes( bus_line_information->s_minutes ) ) return false;
    replace_utf_letters( bus_line_information->s_minutes );
-   
+
    return true;
 }
 
@@ -268,7 +268,7 @@ static bool parse_bus_stop_information( std::string http_content, std::vector<Bu
             std::cerr << "Could not find closing bracket ]" << std::endl;
             return false; 
          }
-         
+
          bool success = parse_bus_line_information( http_content.substr( i+1, end-i-1), &bus_line_information );
          if( success ){
             bus_stop_information.push_back( bus_line_information );

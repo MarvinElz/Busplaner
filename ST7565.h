@@ -74,31 +74,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define CMD_NOP  0xE3
 #define CMD_TEST  0xF0
 
+void st7565_init(char contrast); 
+void st7565_command(char c);
+void st7565_data(char c);
+void st7565_set_brightness(char val);
+void st7565_clear_display(void);
+void st7565_clear();                 // macht screen leer
+void st7565_display();               // muss aufgerufen werden für screenUpdate
 
-
-
-  void st7565_init(char contrast); 
-  void st7565_command(char c);
-  void st7565_data(char c);
-  void st7565_set_brightness(char val);
-  void st7565_clear_display(void);
-  void st7565_clear();                 // macht screen leer
-  void st7565_display();               // muss aufgerufen werden für screenUpdate
-
-  void setpixel(char x, char y, char color);
-  char getpixel(char x, char y);
-  void fillcircle(char x0, char y0, char r, 
-		  char color);
-  void drawcircle(char x0, char y0, char r, 
-		  char color);
-  void drawrect(char x, char y, char w, char h, 
-		char color);
-  void fillrect(char x, char y, char w, char h, 
-		char color);
-  void drawline(char x0, char y0, char x1, char y1, 
-		char color);
-  void drawchar(char x, char line, char c);
-  void drawstring(char x, char line, const char *c);
-
+void setpixel(char x, char y, char color);
+char getpixel(char x, char y);
+void fillcircle(char x0, char y0, char r, char color);
+void drawcircle(char x0, char y0, char r, char color);
+void drawrect(char x, char y, char w, char h, char color);
+void fillrect(char x, char y, char w, char h, char color);
+void drawline(char x0, char y0, char x1, char y1, char color);
+void drawchar(char x, char line, char c);
+void drawstring(char x, char line, const char *c);
 
 #endif
